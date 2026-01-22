@@ -32,7 +32,7 @@ class GeminiService:
         image_data: bytes,
         mime_type: str = "image/jpeg",
         use_fallback: bool = False,
-        retries: int = 3,
+        retries: int = 2,
         response_mime_type: str = "application/json",
     ) -> str:
         model = self.fallback_model if use_fallback else self.primary_model
@@ -217,6 +217,55 @@ Return ONLY valid JSON:
 """
         text = await self._generate_with_retry(prompt, image_data, mime_type=mime_type)
         return self._parse_json(text)
+
+    # ------------------------------------------------------------------
+    # 4) FULL DIAGNOSTIC TEXT PROMPT (NEW)
+    # ------------------------------------------------------------------
+    async def get_full_diagnosis(
+        self,
+        pet_name: str,
+        disease_name: str,
+        lang_target: str = "English"
+    ) -> Dict[str, Any]:
+        """
+        Generates a full textual diagnosis based on the detected pet and disease.
+        No image needed for this textual expansion.
+        """
+        prompt = f"""
+Role: Expert Veterinary Health Assistant.
+
+Context:
+- Pet: {pet_name}
+- Suspected Disease: {disease_name}
+
+Task:
+Generate a structured diagnosis and home care guide in {lang_target}.
+
+JSON Format:
+{{
+  "disease_overview": "A brief explanation of {disease_name} in {pet_name}.",
+  "common_symptoms": ["symptom 1", "symptom 2"],
+  "general_treatment": ["treatment 1", "treatment 2"],
+  "home_care_tips": ["tip 1", "tip 2"],
+  "when_to_visit_vet": ["indicator 1", "indicator 2"],
+  "disclaimer": "This is AI-generated and not a substitute for professional veterinary advice."
+}}
+"""
+        # We use a simple generate call without image here
+        client = self.client
+        loop = asyncio.get_running_loop()
+        resp = await loop.run_in_executor(
+            None,
+            lambda: client.models.generate_content(
+                model=self.primary_model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0.7,
+                    response_mime_type="application/json",
+                ),
+            ),
+        )
+        return self._parse_json(resp.text)
 
 
 gemini_service = GeminiService()

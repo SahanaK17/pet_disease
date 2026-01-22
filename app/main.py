@@ -7,6 +7,7 @@ from app.routers.v1.pets_entity import router as pets_entity_router
 from app.routers.v1.vision import router as vision_router
 from app.routers.v1.recommendations import router as recommendations_router
 from app.routers.v1.stats import router as stats_router
+from app.routers.v1.diagnosis import router as diagnosis_router
 
 from app.config.settings import settings
 from app.utils.db_init import engine
@@ -43,6 +44,7 @@ app.include_router(scans_router, prefix=settings.API_V1_STR)
 app.include_router(vision_router, prefix=settings.API_V1_STR)
 app.include_router(recommendations_router, prefix=settings.API_V1_STR)
 app.include_router(stats_router, prefix=settings.API_V1_STR)
+app.include_router(diagnosis_router, prefix=settings.API_V1_STR)
 app.include_router(pets_entity_router, prefix=settings.API_V1_STR)
 # Existing scan router
 app.include_router(pets.router, prefix=f"{settings.API_V1_STR}/pets", tags=["Scan"])
