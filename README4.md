@@ -41,11 +41,11 @@ Start the server using uvicorn:
 uvicorn app.main:app --reload
 ```
 
-The server will be available at: `http://localhost:8000`
+The server will be available at: `http://localhost:8001`
 
 ## 5. Testing with Swagger UI
 
-1. Open your browser and go to `http://localhost:8000/docs`.
+1. Open your browser and go to `http://localhost:8001/docs`.
 2. Find the `POST /api/v1/pets/scan` endpoint.
 3. Click **Try it out**.
 4. Upload a pet image and provide a name.
@@ -55,7 +55,7 @@ The server will be available at: `http://localhost:8000`
 
 You can test the scan endpoint using cURL:
 ```bash
-curl -X POST "http://127.0.0.1:8000/api/v1/pets/scan" \
+curl -X POST "http://127.0.0.1:8001/api/v1/pets/scan" \
      -F "image=@test_pet.jpg" \
      -F "pet_name=Buddy"
 ```
